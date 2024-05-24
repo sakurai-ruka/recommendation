@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from pprint import pprint
 import pandas as pd
 import random
+import re
 
 # Assign OpenAI API Key from environment variable
 openai.organization = ""
@@ -202,7 +203,7 @@ while input != "quit()":
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
         #print(soup)
-        f = open("recommendation/chtest.txt","w")
+        f = open("chtest.txt","w")
         f.write(str(soup))
         f.close
         items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
@@ -253,6 +254,16 @@ while input != "quit()":
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
         name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
+        #値段を抽出
+        pricetest = items.find_all('span', class_='SearchResultItemPrice_SearchResultItemPrice__value__G8pQV')
+        pricetest = [x.text for x in pricetest]
+        print(pricetest)
+        #商品に関する
+        nametest = items.find_all('span', class_='SearchResultItemTitle_SearchResultItemTitle__name__BwTpC')
+        nametest = [x.text for x in nametest]
+        print(nametest)
+        URLtest = items.find_all(href = re.compile("http://"))
+        print(URLtest)
         #print(type(name))
         #print(len(name))
         #print(name)
@@ -262,6 +273,10 @@ while input != "quit()":
         price_ls = []
         url_ls = []
         count = 0
+        print("$$$$$$$$$$$$$$")
+        print(name)
+        print(type(name))
+        print("$$$$$$$$$$$$$$")
         for n in name:
             if count % 2 == 0:
                 #商品情報をlistに追加
@@ -296,13 +311,16 @@ while input != "quit()":
         #商品情報、価格、urlを格納
         for N, P, U, SN in zip(name_ls, price_ls, url_ls, short_name):
             item_info.append((N,P,U,SN))
-        #print("name"+str(len(name_ls)))
-        #print("price"+str(len(price_ls)))
-        #print("url"+str(len(url_ls)))
-        #print("Sname"+str(len(short_name)))
+        print("name"+str(len(name_ls)))
+        print(name_ls)
+        print("price"+str(len(price_ls)))
+        print(price_ls)
+        print("url"+str(len(url_ls)))
+        print(url_ls)
+        print("Sname"+str(len(short_name)))
+        print(short_name)
 
         #pprint(item_info)
-
         df_info = pd.DataFrame({'name':name_ls,
                                 'price':price_ls,
                                 'url':url_ls,
