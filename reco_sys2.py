@@ -1,6 +1,6 @@
 #システム概要
 #システムとユーザが会話を行い、商品推薦を行うシステム
-#商品推薦時には商品の評価とその理由を提示する
+#商品推薦時には商品の評価とその理由を提示する.
 import openai
 import os
 from langchain import PromptTemplate

@@ -1,6 +1,6 @@
 #システム概要
 #システムとユーザが会話を行い、商品推薦を行うシステム
-#商品推薦時には商品とユーザの要望のマッチ度を理由として説明する
+#商品推薦時には商品とユーザの要望のマッチ度を理由として説明する.
 import openai
 import os
 from langchain import PromptTemplate
