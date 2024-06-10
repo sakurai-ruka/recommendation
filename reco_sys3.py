@@ -254,39 +254,24 @@ while input != "quit()":
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
         name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
-        #print(type(name))
-        #print(len(name))
-        #print(name)
-        name_ls=[]
-        name_ls2=[]
+        #値段を抽出
+        price_ls = items.find_all('span', class_='SearchResultItemPrice_SearchResultItemPrice__value__G8pQV')
+        price_ls = [x.text for x in price_ls]
+        #商品に関する情報
+        name_ls = items.find_all('span', class_='SearchResultItemTitle_SearchResultItemTitle__name__BwTpC')
+        name_ls = [x.text for x in name_ls]
+        url_ls = [a['href'] for a in name]
         short_name = []
-        price_ls = []
-        url_ls = []
         count = 0
-        for n in name:
-            if count % 2 == 0:
-                #商品情報をlistに追加
-                #print("name_ls")
-                #print(count)
-                #print(n.get_text(separator='/'))
-                name_ls2 = (n.get_text(separator='/')).split('/')
-                #print(name_ls2[0])
-                #print(name_ls2[1]+name_ls2[2])
-                #print("-------")
-                #print(n.text)
-                name_ls.append(name_ls2[0])
-                #name_ls.append(n.text)
-                #商品情報を紹介する時用に加工
-                prompt_text3 = few_shot_prompt3.format(input=n.text)
-                shortname = llm(prompt_text3)
-                #加工した商品情報をlistに追加
-                short_name.append(shortname)
-            else:
-                #print("price_ls")
-                #print(count)
-                #print(n.text)
-                price_ls.append(name_ls2[1]+name_ls2[2])
-                #price_ls.append(n.text)
+        print("$$$$$$$$$$$$$$")
+        print(name)
+        print(type(name))
+        print("$$$$$$$$$$$$$$")
+        for n in name_ls:
+            prompt_text3 = few_shot_prompt3.format(input=n)
+            shortname = llm(prompt_text3)
+            #加工した商品情報をlistに追加
+            short_name.append(shortname)
             count += 1
         item_info = []
         #urlを取得
@@ -346,10 +331,10 @@ while input != "quit()":
             #print(row)
             #print(type(row))
             #print(len(row))
-            name = df_info.at[str(number),'Sname']
-            shop = str(df_info.at[str(number),'shops_name'])
-            price =df_info.at[str(number),'price']
-            url = df_info.at[str(number),'url']
+            name = df_info.at[number,'Sname']
+            shop = str(df_info.at[number,'shops_name'])
+            price =df_info.at[number,'price']
+            url = df_info.at[number,'url']
             number += 1
             print("商品" + str(number) + ":"+ shop + "の" + name)
             candidate += "商品" + str(number) + ":"+ shop + "の" + name + "\n"
