@@ -373,7 +373,6 @@ print(goods)
 
 #今までの会話を一度要約
 #一度プロンプトを初期化
-openai.api_key = ''
 messages.clear()
 system_msg = "会話の内容を要約して"
 messages.append({"role": "system", "content": system_msg})
