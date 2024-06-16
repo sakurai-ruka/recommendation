@@ -202,7 +202,7 @@ while input != "quit()":
         response = requests.get(url.format(keyword=keyword2))
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
-        print(soup)
+        #print(soup)
         f = open("recommendation/chtest.txt","w")
         f.write(str(soup))
         f.close
@@ -212,30 +212,29 @@ while input != "quit()":
             name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
         #商品が存在しなかった場合の例外処理
         except AttributeError:
-            print("先程の条件で検索を行いましたが商品が存在しなかった為，以下の条件で推薦を行います")
-            #for item in keyword2:
-            #    if item in keyword_sub:
-            #        keyword2.remove(item)
-            #print("aaaaaaaaaaa")
-            #抽出した要素
-            #print(keyword2)
-            #除外する要素
-            #print(keyword_sub)
-            #print("bbbbbbbbbbb")
-            keyword2 = [item.strip() for item in keyword2]
-            keyword_sub = [item.strip() for item in keyword_sub]
-            keyword2 = list(set(keyword2)-set(keyword_sub))
-            #print(keyword2)
-            research = ','.join(keyword2)
-            print("条件："+research)   
-            response = requests.get(url.format(keyword=research))
-            html = response.text
-            soup = BeautifulSoup(html, 'html.parser')
-            #print(soup)
-            items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
-            #print(items)
-            name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
-            re_try = 1
+            while True:
+                try:
+                    print("以下の条件で推薦を行います")
+                    #keyword2 = [item.strip() for item in keyword2]
+                    #keyword_sub = [item.strip() for item in keyword_sub]
+                    #keyword2 = list(set(keyword2)-set(keyword_sub))
+                    #print(keyword2)
+                    keyword2 = keyword2[:-1]
+                    research = ','.join(keyword2)
+                    print("条件："+research)   
+                    response = requests.get(url.format(keyword=research))
+                    html = response.text
+                    soup = BeautifulSoup(html, 'html.parser')
+                    #print(soup)
+                    items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
+                    #print(items)
+                    name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
+                    print("商品の確認ができました。以下が最終的な検索ワードです")
+                    print("条件："+research)   
+                    re_try = 1
+                    break
+                except AttributeError:
+                    print("先程の条件で検索を行いましたが商品が存在しなかった為，再検索ワードを考えます")
         print(len(name))
 
     if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==8:
@@ -263,10 +262,6 @@ while input != "quit()":
         url_ls = [a['href'] for a in name]
         short_name = []
         count = 0
-        print("$$$$$$$$$$$$$$")
-        print(name)
-        print(type(name))
-        print("$$$$$$$$$$$$$$")
         for n in name_ls:
             prompt_text3 = few_shot_prompt3.format(input=n)
             shortname = llm(prompt_text3)
@@ -307,14 +302,24 @@ while input != "quit()":
         df_info['reviews'] = shop_review
         #print(df_info.loc[0,'name'])
         df_info.to_csv('to_csv_out2.csv')
+        #print(df_info['reviews'])       
+        df_info['reviews'] = df_info['reviews'].apply(lambda x: 'NaN' if x == [] else x)
+        df_info_select = df_info[df_info['reviews'].str.endswith('e', na=True)]
+        #print(df_info_select['reviews'])
+        #print(df_info_select.shape[0])
         #推薦する商品を選択
-        if len(name)/2>3:
-            df_info =df_info.sample(n=3)
-            #print(df_info)
-            df_info.index = ['0','1','2']
-            #print(type(df_info))
-            #print(df_info)
-            #print(df_info.shape)
+        #まずレビューを含むデータがあるか判定
+        if df_info_select.shape[0]>3:
+            df_info = df_info_select.sample(n=3)
+        elif 3>df_info_select.shape[0]>0:
+            df_info = df_info_select
+        elif df_info.shape[0]>3:
+            df_info = df_info.sample(n=3)
+            print("レビュー文含む商品無し")
+        else:
+            df_info = df_info
+            print("レビュー文含む商品無し")
+        df_info = df_info.reset_index(drop=True)
         merchandise = []
         rows_list = df_info.values.tolist()
         number = 0
@@ -326,10 +331,22 @@ while input != "quit()":
             #print(row)
             #print(type(row))
             #print(len(row))
-            name = df_info.at[number,'Sname']
-            shop = str(df_info.at[number,'shops_name'])
-            price =df_info.at[number,'price']
-            url = df_info.at[number,'url']
+            try:
+                name = df_info.at[str(number),'Sname']
+            except KeyError:
+                name = df_info.at[number,'Sname']               
+            try:
+                shop = str(df_info.at[str(number),'shops_name'])
+            except KeyError:
+                shop = str(df_info.at[number,'shops_name'])
+            try:
+                price =df_info.at[str(number),'price']
+            except KeyError:
+                price =df_info.at[number,'price']
+            try:
+                url = df_info.at[str(number),'url']
+            except KeyError:
+                url = df_info.at[number,'url']
             number += 1
             print("商品" + str(number) + ":"+ shop + "の" + name)
             candidate += "商品" + str(number) + ":"+ shop + "の" + name + "\n"
