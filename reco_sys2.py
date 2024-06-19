@@ -203,7 +203,7 @@ while input != "quit()":
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
         #print(soup)
-        f = open("recommendation/chtest.txt","w")
+        f = open("chtest.txt","w")
         f.write(str(soup))
         f.close
         items = soup.find('li', class_='SearchResults_SearchResults__page__OJhQP')
@@ -383,9 +383,9 @@ messages.clear()
 system_msg = "以下の条件で商品を推薦するシステム,\
 1.推薦する商品はプロンプトにある商品のみ,\
 2.会話は簡潔に,\
-3.商品を推薦する時は推薦する理由も明確に,\
+3.商品を説明する時はプロンプト内にある各商品の「評価」と「理由」を参考に,\
 4.ユーザが購買する商品を決定したら対象の商品のURLを表示,\
-5.ユーザがプロンプトにない商品を求めた場合は再検索をするように促して"
+5.推薦する商品に対してはでいるだけ好意的に"
 messages.append({"role": "system", "content": system_msg})
 messages.append({"role": "system", "content": goods})
 #logに記録されていない会話を追加
@@ -397,7 +397,7 @@ while input != "quit()":
     message = input ("🙋 Human: ")
     log += "🙋 Human: " + message + "\n"
     if message == "終了":
-        ld = open("/recommendation/log_2.txt","a")
+        ld = open("log_2.txt","a")
         ld.write("-------------------------------------------")
         ld.write(log)
         ld.close

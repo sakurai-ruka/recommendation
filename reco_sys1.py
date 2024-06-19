@@ -262,10 +262,10 @@ while input != "quit()":
         url_ls = [a['href'] for a in name]
         short_name = []
         count = 0
-        print("$$$$$$$$$$$$$$")
-        print(name)
-        print(type(name))
-        print("$$$$$$$$$$$$$$")
+        #print("$$$$$$$$$$$$$$")
+        #print(name)
+        #print(type(name))
+        #print("$$$$$$$$$$$$$$")
         for n in name_ls:
             prompt_text3 = few_shot_prompt3.format(input=n)
             shortname = llm(prompt_text3)
@@ -341,10 +341,22 @@ while input != "quit()":
             #print(row)
             #print(type(row))
             #print(len(row))
-            name = df_info.at[number,'Sname']
-            shop = str(df_info.at[number,'shops_name'])
-            price =df_info.at[number,'price']
-            url = df_info.at[number,'url']
+            try:
+                name = df_info.at[str(number),'Sname']
+            except KeyError:
+                name = df_info.at[number,'Sname']               
+            try:
+                shop = str(df_info.at[str(number),'shops_name'])
+            except KeyError:
+                shop = str(df_info.at[number,'shops_name'])
+            try:
+                price =df_info.at[str(number),'price']
+            except KeyError:
+                price =df_info.at[number,'price']
+            try:
+                url = df_info.at[str(number),'url']
+            except KeyError:
+                url = df_info.at[number,'url']
             number += 1
             print("商品" + str(number) + ":"+ shop + "の" + name)
             candidate += "商品" + str(number) + ":"+ shop + "の" + name + "\n"
@@ -400,12 +412,12 @@ messages.clear()
 system_msg = "以下の条件で商品を推薦するシステム,\
 1.推薦する商品はプロンプトにある商品のみ,\
 2.会話は簡潔に,\
-3.商品を推薦する時は推薦する理由として商品の評価を提示,\
+3.商品を説明する時は推薦する理由として商品の評価を提示,\
+例として「高評価のためおすすめです」等,\
 4.ユーザが購買する商品を決定したら対象の商品のURLを表示,\
-5.ユーザがプロンプトにない商品を求めた場合は再検索をするように促して"
+5.推薦する商品に対してはでいるだけ好意的に"
 messages.append({"role": "system", "content": system_msg})
 messages.append({"role": "system", "content": goods})
-messages.append({"role": "system", "content": log})
 #logに記録されていない会話を追加
 print("お待たせいたしました。貴方におすすめの商品は以下の通りです。")
 log += "お待たせいたしました。貴方におすすめの商品は以下の通りです。\n"
@@ -415,7 +427,7 @@ while input != "quit()":
     message = input ("🙋 Human: ")
     log += "🙋 Human: " + message + "\n"
     if message == "終了":
-        ld = open("/recommendation/log_1.txt","a")
+        ld = open("log_1.txt","a")
         ld.write("-------------------------------------------")
         ld.write(log)
         ld.close
