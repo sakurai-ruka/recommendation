@@ -241,7 +241,7 @@ while input != "quit()":
 
         print(len(name))
 
-    if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==8:
+    if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==5:
         reply = "おすすめの商品を考えるので少々お待ちください"
         print("---\n🤖 Riley: " + reply + "\n---") 
         log += "🤖 Riley:" + reply + "\n"
