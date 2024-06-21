@@ -229,11 +229,16 @@ while input != "quit()":
                     #print(items)
                     name = items.find_all('a', class_='SearchResult_SearchResult__detailsContainerLink__HrJQL')
                     print("商品の確認ができました。以下が最終的な検索ワードです")
-                    print("条件："+research)   
+                    print("条件："+research)
+                    log += "🤖 Riley:" + "商品の確認ができました。以下が最終的な検索ワードです" + "\n"
+                    log += "🤖 Riley:" + "条件："+research + "\n"
+
                     re_try = 1
                     break
                 except AttributeError:
                     print("先程の条件で検索を行いましたが商品が存在しなかった為，再検索ワードを考えます")
+                    log += "🤖 Riley:" + "先程の条件で検索を行いましたが商品が存在しなかった為，再検索ワードを考えます" + "\n"
+
         print(len(name))
 
     if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==8:
@@ -321,9 +326,11 @@ while input != "quit()":
         elif df_info.shape[0]>3:
             df_info = df_info.sample(n=3)
             print("レビュー文含む商品無し")
+            log += "🤖 Riley:" + "レビュー文含む商品無し" + "\n"
         else:
             df_info = df_info
             print("レビュー文含む商品無し")
+            log += "🤖 Riley:" + "レビュー文含む商品無し" + "\n"
         df_info = df_info.reset_index(drop=True)
         merchandise = []
         rows_list = df_info.values.tolist()
