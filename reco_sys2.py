@@ -240,7 +240,7 @@ while input != "quit()":
                     log += "🤖 Riley:" + "先程の条件で検索を行いましたが商品が存在しなかった為，再検索ワードを考えます" + "\n"
         print(len(name))
 
-    if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==8:
+    if (len(name)>0 and len(name)/2<10) or re_try == 1 or turn ==5:
         reply = "おすすめの商品を考えるので少々お待ちください"
         print("---\n🤖 Riley: " + reply + "\n---") 
         log += "🤖 Riley:" + reply + "\n"
